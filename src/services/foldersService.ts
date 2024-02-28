@@ -13,4 +13,8 @@ export class FoldersService {
 		const newFolder = { ...folder, userId };
 		return this.foldersDb.createFolder(newFolder);
 	};
+
+	getListByUserId = (userId: number) => {
+		return this.foldersDb.getListByUserId(userId);
+	};
 }

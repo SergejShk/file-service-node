@@ -1,4 +1,5 @@
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
+import { eq } from "drizzle-orm";
 
 import folders, { NewFolder } from "./models/folders";
 
@@ -11,4 +12,7 @@ export class FoldersDb {
 			.values(newFolder)
 			.returning()
 			.then((res) => res[0]);
+
+	public getListByUserId = async (userId: number) =>
+		this.db.select().from(folders).where(eq(folders.userId, userId));
 }
