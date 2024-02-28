@@ -17,4 +17,12 @@ export class FoldersService {
 	getListByUserId = (userId: number) => {
 		return this.foldersDb.getListByUserId(userId);
 	};
+
+	getListByParentId = (userId: number, parentId: number) => {
+		if (!parentId) {
+			return this.foldersDb.getListWithNullableParentId(userId);
+		}
+
+		return this.foldersDb.getListByParentId(userId, parentId);
+	};
 }

@@ -1,5 +1,5 @@
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
-import { eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 
 import folders, { NewFolder } from "./models/folders";
 
@@ -15,4 +15,18 @@ export class FoldersDb {
 
 	public getListByUserId = async (userId: number) =>
 		this.db.select().from(folders).where(eq(folders.userId, userId));
+
+	public getListWithNullableParentId = async (userId: number) => {
+		return this.db
+			.select()
+			.from(folders)
+			.where(and(eq(folders.userId, userId), isNull(folders.parentId)));
+	};
+
+	public getListByParentId = async (userId: number, parentId: number) => {
+		return this.db
+			.select()
+			.from(folders)
+			.where(and(eq(folders.userId, userId), eq(folders.parentId, parentId)));
+	};
 }

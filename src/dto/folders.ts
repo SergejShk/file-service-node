@@ -8,3 +8,5 @@ export const newFolderSchema = z
 		parentId: z.number().optional(),
 	})
 	.strict();
+
+export const getByParentIdSchema = z.coerce.number();
