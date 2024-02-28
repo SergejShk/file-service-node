@@ -14,10 +14,6 @@ export class FoldersService {
 		return this.foldersDb.createFolder(newFolder);
 	};
 
-	getListByUserId = (userId: number) => {
-		return this.foldersDb.getListByUserId(userId);
-	};
-
 	getListByParentId = (userId: number, parentId: number) => {
 		if (!parentId) {
 			return this.foldersDb.getListWithNullableParentId(userId);

@@ -13,9 +13,6 @@ export class FoldersDb {
 			.returning()
 			.then((res) => res[0]);
 
-	public getListByUserId = async (userId: number) =>
-		this.db.select().from(folders).where(eq(folders.userId, userId));
-
 	public getListWithNullableParentId = async (userId: number) => {
 		return this.db
 			.select()
