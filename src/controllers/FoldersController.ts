@@ -37,6 +37,7 @@ export class FoldersController extends Controller {
 			const validatedBody = newFolderSchema.safeParse(req.body);
 
 			if (!validatedBody.success) {
+				console.log("=====================", req.body);
 				throw new InvalidParameterError("Bad request");
 			}
 

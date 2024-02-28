@@ -1,8 +1,8 @@
 export interface INewFolder {
 	name: string;
 	isPublick: boolean;
-	editorsIds: string[];
-	parentId: number;
+	editorsIds?: string[];
+	parentId?: number;
 }
 
 export interface IFolder {

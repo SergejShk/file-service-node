@@ -4,7 +4,7 @@ export const newFolderSchema = z
 	.object({
 		name: z.string(),
 		isPublick: z.boolean(),
-		editorsIds: z.string().array(),
-		parentId: z.number(),
+		editorsIds: z.string().array().optional(),
+		parentId: z.number().optional(),
 	})
 	.strict();

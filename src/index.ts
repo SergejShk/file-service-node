@@ -4,12 +4,15 @@ import { migrate } from "drizzle-orm/node-postgres/migrator";
 import dotenv from "dotenv";
 
 import { UsersDb } from "./database/usersDb";
+import { FoldersDb } from "./database/foldersDb";
 
 import { AuthService } from "./services/authService";
+import { FoldersService } from "./services/foldersService";
 
 import { AuthMiddlewares } from "./middlewares/authMiddlewares";
 
 import { AuthController } from "./controllers/AuthController";
+import { FoldersController } from "./controllers/FoldersController";
 
 import App from "./app";
 
@@ -34,17 +37,20 @@ const serverStart = async () => {
 
 		// dbs
 		const usersDb = new UsersDb(db);
+		const foldersDb = new FoldersDb(db);
 
 		// services
 		const authService = new AuthService(usersDb);
+		const foldersService = new FoldersService(foldersDb);
 
 		// middlewares
 		const authMiddlewares = new AuthMiddlewares(usersDb);
 
 		//controllers
 		const authController = new AuthController(authService, authMiddlewares);
+		const foldersController = new FoldersController(foldersService, authMiddlewares);
 
-		const app = new App(PORT, [authController]);
+		const app = new App(PORT, [authController, foldersController]);
 
 		app.listen();
 	} catch (error: any) {
