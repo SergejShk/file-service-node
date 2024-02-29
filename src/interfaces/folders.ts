@@ -13,3 +13,9 @@ export interface IFolder {
 	parentId: number | null;
 	userId: number;
 }
+
+export interface IUpdateFolder {
+	id: number;
+	name: string;
+	isPublick: boolean;
+}

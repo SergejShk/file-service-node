@@ -10,3 +10,11 @@ export const newFolderSchema = z
 	.strict();
 
 export const getByParentIdSchema = z.coerce.number();
+
+export const updateFolderSchema = z
+	.object({
+		id: z.coerce.number(),
+		name: z.string(),
+		isPublick: z.boolean(),
+	})
+	.strict();

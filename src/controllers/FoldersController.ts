@@ -8,7 +8,7 @@ import { BaseResponse, okResponse } from "../api/baseResponses";
 
 import { AuthMiddlewares } from "../middlewares/authMiddlewares";
 
-import { getByParentIdSchema, newFolderSchema } from "../dto/folders";
+import { getByParentIdSchema, newFolderSchema, updateFolderSchema } from "../dto/folders";
 
 import { InvalidParameterError } from "../errors/customErrors";
 
@@ -34,6 +34,11 @@ export class FoldersController extends Controller {
 			"/list-by-parent/:id",
 			this.authMiddlewares.isAuthorized,
 			this.link({ route: this.getFoldersByParentId })
+		);
+		this.router.put(
+			"/update/:id",
+			this.authMiddlewares.isAuthorized,
+			this.link({ route: this.updateFolder })
 		);
 	}
 
@@ -62,7 +67,7 @@ export class FoldersController extends Controller {
 		next
 	) => {
 		try {
-			const validatedBody = getByParentIdSchema.safeParse(Number(req.params.id));
+			const validatedBody = getByParentIdSchema.safeParse(req.params.id);
 
 			if (!validatedBody.success) {
 				throw new InvalidParameterError("Bad request");
@@ -72,6 +77,23 @@ export class FoldersController extends Controller {
 			const user = req.user as IUser;
 
 			const result = await this.foldersService.getListByParentId(user.id, validatedBody.data);
+
+			return res.status(200).json(okResponse(result));
+		} catch (e) {
+			next(e);
+		}
+	};
+
+	private updateFolder: RequestHandler<{ id: number }, BaseResponse<IFolder>> = async (req, res, next) => {
+		try {
+			const body = { ...req.body, id: req.params.id };
+			const validatedBody = updateFolderSchema.safeParse(body);
+
+			if (!validatedBody.success) {
+				throw new InvalidParameterError("Bad request");
+			}
+
+			const result = await this.foldersService.update(validatedBody.data);
 
 			return res.status(200).json(okResponse(result));
 		} catch (e) {

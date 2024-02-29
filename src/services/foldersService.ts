@@ -1,6 +1,6 @@
 import { FoldersDb } from "../database/foldersDb";
 
-import { INewFolder } from "../interfaces/folders";
+import { INewFolder, IUpdateFolder } from "../interfaces/folders";
 
 export class FoldersService {
 	private foldersDb: FoldersDb;
@@ -20,5 +20,9 @@ export class FoldersService {
 		}
 
 		return this.foldersDb.getListByParentId(userId, parentId);
+	};
+
+	update = (folder: IUpdateFolder) => {
+		return this.foldersDb.updateFolder(folder);
 	};
 }
