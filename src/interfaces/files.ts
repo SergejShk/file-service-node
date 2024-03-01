@@ -13,3 +13,11 @@ export interface IS3PresignedPostResponse {
 	url: string;
 	fields: IS3PresignedPostFieldsResponse;
 }
+
+export interface INewFile {
+	name: string;
+	key: string;
+	isPublick: boolean;
+	editorsIds?: number[] | null;
+	folderId?: number | null;
+}

@@ -1,10 +1,12 @@
 import { RequestHandler } from "express";
 
+import { File } from "../database/models/files";
+
 import { Controller } from "./Controller";
 
 import { FilesService } from "../services/filesService";
 
-import { presignedPostSchema } from "../dto/files";
+import { newFileSchema, presignedPostSchema } from "../dto/files";
 
 import { AuthMiddlewares } from "../middlewares/authMiddlewares";
 
@@ -33,6 +35,7 @@ export class FilesController extends Controller {
 			this.authMiddlewares.isAuthorized,
 			this.link({ route: this.createPresignedPost })
 		);
+		this.router.post("/new", this.authMiddlewares.isAuthorized, this.link({ route: this.createFile }));
 	}
 
 	private createPresignedPost: RequestHandler<{}, BaseResponse<IS3PresignedPostResponse>> = async (
@@ -52,6 +55,25 @@ export class FilesController extends Controller {
 			const presignedPost = await this.filesService.createPresignedPost(key, type);
 
 			return res.status(200).json(okResponse(presignedPost));
+		} catch (e) {
+			next(e);
+		}
+	};
+
+	private createFile: RequestHandler<{}, BaseResponse<File>> = async (req, res, next) => {
+		try {
+			const validatedBody = newFileSchema.safeParse(req.body);
+
+			if (!validatedBody.success) {
+				throw new InvalidParameterError("Bad request");
+			}
+
+			//  @ts-ignore
+			const user = req.user as IUser;
+
+			const result = await this.filesService.create(validatedBody.data, user.id);
+
+			return res.status(200).json(okResponse(result));
 		} catch (e) {
 			next(e);
 		}

@@ -2,7 +2,7 @@ import { Endpoint, S3 } from "aws-sdk";
 
 import { FilesDb } from "../database/filesDb";
 
-import { IS3PresignedPostResponse } from "../interfaces/files";
+import { INewFile, IS3PresignedPostResponse } from "../interfaces/files";
 
 export class FilesService {
 	private filesDb: FilesDb;
@@ -36,5 +36,10 @@ export class FilesService {
 		});
 
 		return result as unknown as IS3PresignedPostResponse;
+	};
+
+	create = (file: INewFile, userId: number) => {
+		const newFile = { ...file, userId };
+		return this.filesDb.createFolder(newFile);
 	};
 }
