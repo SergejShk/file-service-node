@@ -8,11 +8,13 @@ import { FoldersDb } from "./database/foldersDb";
 
 import { AuthService } from "./services/authService";
 import { FoldersService } from "./services/foldersService";
+import { UsersService } from "./services/usersService";
 
 import { AuthMiddlewares } from "./middlewares/authMiddlewares";
 
 import { AuthController } from "./controllers/AuthController";
 import { FoldersController } from "./controllers/FoldersController";
+import { UsersController } from "./controllers/UsersController";
 
 import App from "./app";
 
@@ -42,6 +44,7 @@ const serverStart = async () => {
 		// services
 		const authService = new AuthService(usersDb);
 		const foldersService = new FoldersService(foldersDb);
+		const usersService = new UsersService(usersDb);
 
 		// middlewares
 		const authMiddlewares = new AuthMiddlewares(usersDb);
@@ -49,8 +52,9 @@ const serverStart = async () => {
 		//controllers
 		const authController = new AuthController(authService, authMiddlewares);
 		const foldersController = new FoldersController(foldersService, authMiddlewares);
+		const usersController = new UsersController(usersService, authMiddlewares);
 
-		const app = new App(PORT, [authController, foldersController]);
+		const app = new App(PORT, [authController, foldersController, usersController]);
 
 		app.listen();
 	} catch (error: any) {

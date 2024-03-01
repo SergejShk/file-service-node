@@ -25,4 +25,8 @@ export class FoldersService {
 	update = (folder: IUpdateFolder) => {
 		return this.foldersDb.updateFolder(folder);
 	};
+
+	updateEditors = (id: number, editorsIds: number[]) => {
+		return this.foldersDb.updateEditors(id, editorsIds);
+	};
 }

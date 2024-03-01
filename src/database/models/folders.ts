@@ -7,7 +7,7 @@ const folders = pgTable("folders", {
 	id: serial("id").primaryKey().notNull(),
 	name: varchar("name").notNull(),
 	isPublick: boolean("is_publick").notNull(),
-	editorsIds: jsonb("editors").$type<string[]>(),
+	editorsIds: jsonb("editors").$type<number[]>(),
 	parentId: integer("parent_id"),
 	userId: integer("user_id")
 		.references(() => users.id)

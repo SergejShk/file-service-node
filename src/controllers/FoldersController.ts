@@ -8,7 +8,12 @@ import { BaseResponse, okResponse } from "../api/baseResponses";
 
 import { AuthMiddlewares } from "../middlewares/authMiddlewares";
 
-import { getByParentIdSchema, newFolderSchema, updateFolderSchema } from "../dto/folders";
+import {
+	getByParentIdSchema,
+	newFolderSchema,
+	updateFolderEditorsSchema,
+	updateFolderSchema,
+} from "../dto/folders";
 
 import { InvalidParameterError } from "../errors/customErrors";
 
@@ -39,6 +44,11 @@ export class FoldersController extends Controller {
 			"/update/:id",
 			this.authMiddlewares.isAuthorized,
 			this.link({ route: this.updateFolder })
+		);
+		this.router.put(
+			"/update-editors/:id",
+			this.authMiddlewares.isAuthorized,
+			this.link({ route: this.updateEditors })
 		);
 	}
 
@@ -94,6 +104,25 @@ export class FoldersController extends Controller {
 			}
 
 			const result = await this.foldersService.update(validatedBody.data);
+
+			return res.status(200).json(okResponse(result));
+		} catch (e) {
+			next(e);
+		}
+	};
+
+	private updateEditors: RequestHandler<{ id: number }, BaseResponse<IFolder>> = async (req, res, next) => {
+		try {
+			const body = { ...req.body, id: req.params.id };
+			const validatedBody = updateFolderEditorsSchema.safeParse(body);
+
+			if (!validatedBody.success) {
+				throw new InvalidParameterError("Bad request");
+			}
+
+			const { id, editorsIds } = validatedBody.data;
+
+			const result = await this.foldersService.updateEditors(id, editorsIds);
 
 			return res.status(200).json(okResponse(result));
 		} catch (e) {

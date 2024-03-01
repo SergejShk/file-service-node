@@ -6,6 +6,8 @@ import users, { NewUser } from "./models/users";
 export class UsersDb {
 	constructor(private db: NodePgDatabase) {}
 
+	public getAllUsers = async () => this.db.select().from(users);
+
 	public getUserByEmail = async (email: string) => this.db.select().from(users).where(eq(users.email, email));
 
 	public createUser = async (newUser: NewUser) => {

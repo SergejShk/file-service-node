@@ -2,7 +2,8 @@ import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { and, asc, eq, isNull } from "drizzle-orm";
 
 import folders, { NewFolder } from "./models/folders";
-import { IUpdateFolder } from "@/interfaces/folders";
+
+import { IUpdateFolder } from "../interfaces/folders";
 
 export class FoldersDb {
 	constructor(private db: NodePgDatabase) {}
@@ -38,6 +39,16 @@ export class FoldersDb {
 				isPublick: folder.isPublick,
 			})
 			.where(eq(folders.id, folder.id))
+			.returning()
+			.then((res) => res[0]);
+
+	public updateEditors = async (id: number, editorsIds: number[]) =>
+		this.db
+			.update(folders)
+			.set({
+				editorsIds,
+			})
+			.where(eq(folders.id, id))
 			.returning()
 			.then((res) => res[0]);
 }
