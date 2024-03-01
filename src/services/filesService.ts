@@ -50,4 +50,6 @@ export class FilesService {
 
 		return this.filesDb.getListByFolderId(userId, folderId, name);
 	};
+
+	getObject = (key: string): string => encodeURI(`https://${this.bucketName}.s3.amazonaws.com/${key}`);
 }

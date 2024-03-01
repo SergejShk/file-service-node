@@ -41,6 +41,7 @@ export class FilesController extends Controller {
 			this.authMiddlewares.isAuthorized,
 			this.link({ route: this.getFilesByFolderId })
 		);
+		this.router.get("/:key", this.authMiddlewares.isAuthorized, this.link({ route: this.getObject }));
 	}
 
 	private createPresignedPost: RequestHandler<{}, BaseResponse<IS3PresignedPostResponse>> = async (
@@ -104,6 +105,16 @@ export class FilesController extends Controller {
 			const result = await this.filesService.getListByFolderId(user.id, folderId, name);
 
 			return res.status(200).json(okResponse(result));
+		} catch (e) {
+			next(e);
+		}
+	};
+
+	private getObject: RequestHandler<{ key: string }, BaseResponse<string>> = (req, res, next) => {
+		try {
+			const presignedPost = this.filesService.getObject(req.params.key);
+
+			return res.status(200).json(okResponse(presignedPost));
 		} catch (e) {
 			next(e);
 		}
