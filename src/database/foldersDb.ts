@@ -1,5 +1,5 @@
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
-import { and, asc, eq, isNull, or } from "drizzle-orm";
+import { and, asc, eq, ilike, isNull, or } from "drizzle-orm";
 
 import folders, { NewFolder } from "./models/folders";
 
@@ -15,27 +15,27 @@ export class FoldersDb {
 			.returning()
 			.then((res) => res[0]);
 
-	public getListWithNullableParentId = async (userId: number) => {
+	public getListWithNullableParentId = async (userId: number, name: string) => {
 		return this.db
 			.select()
 			.from(folders)
 			.where(
 				or(
-					and(eq(folders.userId, userId), isNull(folders.parentId)),
-					and(eq(folders.isPublick, true), isNull(folders.parentId))
+					and(eq(folders.userId, userId), isNull(folders.parentId), ilike(folders.name, `%${name}%`)),
+					and(eq(folders.isPublick, true), isNull(folders.parentId), ilike(folders.name, `%${name}%`))
 				)
 			)
 			.orderBy(asc(folders.id));
 	};
 
-	public getListByParentId = async (userId: number, parentId: number) => {
+	public getListByParentId = async (userId: number, parentId: number, name: string) => {
 		return this.db
 			.select()
 			.from(folders)
 			.where(
 				or(
-					and(eq(folders.userId, userId), eq(folders.parentId, parentId)),
-					and(eq(folders.isPublick, true), eq(folders.parentId, parentId))
+					and(eq(folders.userId, userId), eq(folders.parentId, parentId), ilike(folders.name, `%${name}%`)),
+					and(eq(folders.isPublick, true), eq(folders.parentId, parentId), ilike(folders.name, `%${name}%`))
 				)
 			)
 			.orderBy(asc(folders.id));

@@ -14,12 +14,12 @@ export class FoldersService {
 		return this.foldersDb.createFolder(newFolder);
 	};
 
-	getListByParentId = (userId: number, parentId: number) => {
+	getListByParentId = (userId: number, parentId: number, name: string) => {
 		if (!parentId) {
-			return this.foldersDb.getListWithNullableParentId(userId);
+			return this.foldersDb.getListWithNullableParentId(userId, name);
 		}
 
-		return this.foldersDb.getListByParentId(userId, parentId);
+		return this.foldersDb.getListByParentId(userId, parentId, name);
 	};
 
 	update = (folder: IUpdateFolder) => {

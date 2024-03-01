@@ -35,7 +35,7 @@ export class FoldersController extends Controller {
 
 	private initializeRoutes() {
 		this.router.post("/new", this.authMiddlewares.isAuthorized, this.link({ route: this.createFolder }));
-		this.router.get(
+		this.router.post(
 			"/list-by-parent/:id",
 			this.authMiddlewares.isAuthorized,
 			this.link({ route: this.getFoldersByParentId })
@@ -77,7 +77,8 @@ export class FoldersController extends Controller {
 		next
 	) => {
 		try {
-			const validatedBody = getByParentIdSchema.safeParse(req.params.id);
+			const body = { id: req.params.id, name: req.body.name };
+			const validatedBody = getByParentIdSchema.safeParse(body);
 
 			if (!validatedBody.success) {
 				throw new InvalidParameterError("Bad request");
@@ -85,8 +86,9 @@ export class FoldersController extends Controller {
 
 			//  @ts-ignore
 			const user = req.user as IUser;
+			const { id, name } = validatedBody.data;
 
-			const result = await this.foldersService.getListByParentId(user.id, validatedBody.data);
+			const result = await this.foldersService.getListByParentId(user.id, id, name);
 
 			return res.status(200).json(okResponse(result));
 		} catch (e) {

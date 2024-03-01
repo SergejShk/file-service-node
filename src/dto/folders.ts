@@ -9,7 +9,12 @@ export const newFolderSchema = z
 	})
 	.strict();
 
-export const getByParentIdSchema = z.coerce.number();
+export const getByParentIdSchema = z
+	.object({
+		id: z.coerce.number(),
+		name: z.string(),
+	})
+	.strict();
 
 export const updateFolderSchema = z
 	.object({
