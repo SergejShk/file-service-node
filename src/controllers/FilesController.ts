@@ -6,7 +6,7 @@ import { Controller } from "./Controller";
 
 import { FilesService } from "../services/filesService";
 
-import { newFileSchema, presignedPostSchema } from "../dto/files";
+import { getByFolderIdSchema, newFileSchema, presignedPostSchema } from "../dto/files";
 
 import { AuthMiddlewares } from "../middlewares/authMiddlewares";
 
@@ -36,6 +36,11 @@ export class FilesController extends Controller {
 			this.link({ route: this.createPresignedPost })
 		);
 		this.router.post("/new", this.authMiddlewares.isAuthorized, this.link({ route: this.createFile }));
+		this.router.post(
+			"/list-by-folder/:id",
+			this.authMiddlewares.isAuthorized,
+			this.link({ route: this.getFilesByFolderId })
+		);
 	}
 
 	private createPresignedPost: RequestHandler<{}, BaseResponse<IS3PresignedPostResponse>> = async (
@@ -72,6 +77,31 @@ export class FilesController extends Controller {
 			const user = req.user as IUser;
 
 			const result = await this.filesService.create(validatedBody.data, user.id);
+
+			return res.status(200).json(okResponse(result));
+		} catch (e) {
+			next(e);
+		}
+	};
+
+	private getFilesByFolderId: RequestHandler<{ id: number }, BaseResponse<File[]>> = async (
+		req,
+		res,
+		next
+	) => {
+		try {
+			const body = { folderId: req.params.id, name: req.body.name };
+			const validatedBody = getByFolderIdSchema.safeParse(body);
+
+			if (!validatedBody.success) {
+				throw new InvalidParameterError("Bad request");
+			}
+
+			//  @ts-ignore
+			const user = req.user as IUser;
+			const { folderId, name } = validatedBody.data;
+
+			const result = await this.filesService.getListByFolderId(user.id, folderId, name);
 
 			return res.status(200).json(okResponse(result));
 		} catch (e) {

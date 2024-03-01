@@ -42,4 +42,12 @@ export class FilesService {
 		const newFile = { ...file, userId };
 		return this.filesDb.createFolder(newFile);
 	};
+
+	getListByFolderId = (userId: number, folderId: number, name: string) => {
+		if (!folderId) {
+			return this.filesDb.getListWithNullableFolderId(userId, name);
+		}
+
+		return this.filesDb.getListByFolderId(userId, folderId, name);
+	};
 }

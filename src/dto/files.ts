@@ -16,3 +16,10 @@ export const newFileSchema = z
 		folderId: z.number().optional(),
 	})
 	.strict();
+
+export const getByFolderIdSchema = z
+	.object({
+		folderId: z.coerce.number(),
+		name: z.string(),
+	})
+	.strict();
