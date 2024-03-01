@@ -5,16 +5,19 @@ import dotenv from "dotenv";
 
 import { UsersDb } from "./database/usersDb";
 import { FoldersDb } from "./database/foldersDb";
+import { FilesDb } from "./database/filesDb";
 
 import { AuthService } from "./services/authService";
 import { FoldersService } from "./services/foldersService";
 import { UsersService } from "./services/usersService";
+import { FilesService } from "./services/filesService";
 
 import { AuthMiddlewares } from "./middlewares/authMiddlewares";
 
 import { AuthController } from "./controllers/AuthController";
 import { FoldersController } from "./controllers/FoldersController";
 import { UsersController } from "./controllers/UsersController";
+import { FilesController } from "./controllers/FilesController";
 
 import App from "./app";
 
@@ -40,11 +43,13 @@ const serverStart = async () => {
 		// dbs
 		const usersDb = new UsersDb(db);
 		const foldersDb = new FoldersDb(db);
+		const filesDb = new FilesDb(db);
 
 		// services
 		const authService = new AuthService(usersDb);
 		const foldersService = new FoldersService(foldersDb);
 		const usersService = new UsersService(usersDb);
+		const filesService = new FilesService(filesDb);
 
 		// middlewares
 		const authMiddlewares = new AuthMiddlewares(usersDb);
@@ -53,8 +58,9 @@ const serverStart = async () => {
 		const authController = new AuthController(authService, authMiddlewares);
 		const foldersController = new FoldersController(foldersService, authMiddlewares);
 		const usersController = new UsersController(usersService, authMiddlewares);
+		const filesController = new FilesController(filesService, authMiddlewares);
 
-		const app = new App(PORT, [authController, foldersController, usersController]);
+		const app = new App(PORT, [authController, foldersController, usersController, filesController]);
 
 		app.listen();
 	} catch (error: any) {
