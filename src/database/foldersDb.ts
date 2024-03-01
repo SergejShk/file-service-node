@@ -1,5 +1,5 @@
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
-import { and, asc, eq, isNull } from "drizzle-orm";
+import { and, asc, eq, isNull, or } from "drizzle-orm";
 
 import folders, { NewFolder } from "./models/folders";
 
@@ -19,7 +19,12 @@ export class FoldersDb {
 		return this.db
 			.select()
 			.from(folders)
-			.where(and(eq(folders.userId, userId), isNull(folders.parentId)))
+			.where(
+				or(
+					and(eq(folders.userId, userId), isNull(folders.parentId)),
+					and(eq(folders.isPublick, true), isNull(folders.parentId))
+				)
+			)
 			.orderBy(asc(folders.id));
 	};
 
@@ -27,7 +32,12 @@ export class FoldersDb {
 		return this.db
 			.select()
 			.from(folders)
-			.where(and(eq(folders.userId, userId), eq(folders.parentId, parentId)))
+			.where(
+				or(
+					and(eq(folders.userId, userId), eq(folders.parentId, parentId)),
+					and(eq(folders.isPublick, true), eq(folders.parentId, parentId))
+				)
+			)
 			.orderBy(asc(folders.id));
 	};
 
