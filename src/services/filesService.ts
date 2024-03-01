@@ -2,7 +2,7 @@ import { Endpoint, S3 } from "aws-sdk";
 
 import { FilesDb } from "../database/filesDb";
 
-import { INewFile, IS3PresignedPostResponse } from "../interfaces/files";
+import { INewFile, IS3PresignedPostResponse, IUpdateFile } from "../interfaces/files";
 
 export class FilesService {
 	private filesDb: FilesDb;
@@ -52,4 +52,8 @@ export class FilesService {
 	};
 
 	getObject = (key: string): string => encodeURI(`https://${this.bucketName}.s3.amazonaws.com/${key}`);
+
+	update = (file: IUpdateFile) => {
+		return this.filesDb.updateFile(file);
+	};
 }

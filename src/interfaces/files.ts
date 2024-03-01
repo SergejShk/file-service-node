@@ -21,3 +21,9 @@ export interface INewFile {
 	editorsIds?: number[] | null;
 	folderId?: number | null;
 }
+
+export interface IUpdateFile {
+	id: number;
+	name: string;
+	isPublick: boolean;
+}

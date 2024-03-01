@@ -2,6 +2,7 @@ import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { and, asc, eq, ilike, isNull, or } from "drizzle-orm";
 
 import files, { NewFile } from "./models/files";
+import { IUpdateFile } from "../interfaces/files";
 
 export class FilesDb {
 	constructor(private db: NodePgDatabase) {}
@@ -38,4 +39,15 @@ export class FilesDb {
 			)
 			.orderBy(asc(files.id));
 	};
+
+	public updateFile = async (file: IUpdateFile) =>
+		this.db
+			.update(files)
+			.set({
+				name: file.name,
+				isPublick: file.isPublick,
+			})
+			.where(eq(files.id, file.id))
+			.returning()
+			.then((res) => res[0]);
 }

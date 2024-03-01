@@ -23,3 +23,11 @@ export const getByFolderIdSchema = z
 		name: z.string(),
 	})
 	.strict();
+
+export const updateFileSchema = z
+	.object({
+		id: z.coerce.number(),
+		name: z.string(),
+		isPublick: z.boolean(),
+	})
+	.strict();
