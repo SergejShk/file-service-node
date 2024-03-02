@@ -62,4 +62,7 @@ export class FilesDb {
 			.then((res) => res[0]);
 
 	public deleteFile = async (id: number) => this.db.delete(files).where(eq(files.id, id));
+
+	public deleteByFolderId = async (folderId: number) =>
+		this.db.delete(files).where(eq(files.folderId, folderId));
 }

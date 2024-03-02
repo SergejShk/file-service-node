@@ -47,9 +47,9 @@ const serverStart = async () => {
 
 		// services
 		const authService = new AuthService(usersDb);
-		const foldersService = new FoldersService(foldersDb);
-		const usersService = new UsersService(usersDb);
 		const filesService = new FilesService(filesDb);
+		const foldersService = new FoldersService(foldersDb, filesService);
+		const usersService = new UsersService(usersDb);
 
 		// middlewares
 		const authMiddlewares = new AuthMiddlewares(usersDb);

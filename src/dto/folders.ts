@@ -30,3 +30,5 @@ export const updateFolderEditorsSchema = z
 		editorsIds: z.number().array(),
 	})
 	.strict();
+
+export const deleteFolderSchema = z.coerce.number();

@@ -84,4 +84,14 @@ export class FilesService {
 
 		return true;
 	};
+
+	deleteManyByFolderId = async (userId: number, folderId: number) => {
+		const files = await this.getListByFolderId(userId, folderId, "");
+
+		await this.filesDb.deleteByFolderId(folderId);
+
+		await Promise.all(files.map(async (file) => await this.deleteObject(file.key)));
+
+		return true;
+	};
 }

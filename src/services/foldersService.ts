@@ -1,12 +1,16 @@
 import { FoldersDb } from "../database/foldersDb";
 
+import { FilesService } from "./filesService";
+
 import { INewFolder, IUpdateFolder } from "../interfaces/folders";
 
 export class FoldersService {
 	private foldersDb: FoldersDb;
+	private filesService: FilesService;
 
-	constructor(foldersDb: FoldersDb) {
+	constructor(foldersDb: FoldersDb, filesService: FilesService) {
 		this.foldersDb = foldersDb;
+		this.filesService = filesService;
 	}
 
 	create = (folder: INewFolder, userId: number) => {
@@ -28,5 +32,12 @@ export class FoldersService {
 
 	updateEditors = (id: number, editorsIds: number[]) => {
 		return this.foldersDb.updateEditors(id, editorsIds);
+	};
+
+	deleteFolder = async (userId: number, id: number) => {
+		await this.foldersDb.deleteFolder(id);
+		await this.filesService.deleteManyByFolderId(userId, id);
+
+		return true;
 	};
 }

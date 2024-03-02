@@ -170,7 +170,7 @@ export class FilesController extends Controller {
 		}
 	};
 
-	private deleteFile: RequestHandler<{ key: string }, BaseResponse<boolean>> = async (req, res, next) => {
+	private deleteFile: RequestHandler<{}, BaseResponse<boolean>> = async (req, res, next) => {
 		try {
 			const validatedBody = deleteFileSchema.safeParse(req.body);
 

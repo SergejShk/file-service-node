@@ -61,4 +61,6 @@ export class FoldersDb {
 			.where(eq(folders.id, id))
 			.returning()
 			.then((res) => res[0]);
+
+	public deleteFolder = async (id: number) => this.db.delete(folders).where(eq(folders.id, id));
 }

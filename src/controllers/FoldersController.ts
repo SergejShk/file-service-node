@@ -9,6 +9,7 @@ import { BaseResponse, okResponse } from "../api/baseResponses";
 import { AuthMiddlewares } from "../middlewares/authMiddlewares";
 
 import {
+	deleteFolderSchema,
 	getByParentIdSchema,
 	newFolderSchema,
 	updateFolderEditorsSchema,
@@ -49,6 +50,11 @@ export class FoldersController extends Controller {
 			"/update-editors/:id",
 			this.authMiddlewares.isAuthorized,
 			this.link({ route: this.updateEditors })
+		);
+		this.router.delete(
+			"/delete/:id",
+			this.authMiddlewares.isAuthorized,
+			this.link({ route: this.deleteFolder })
 		);
 	}
 
@@ -127,6 +133,25 @@ export class FoldersController extends Controller {
 			const result = await this.foldersService.updateEditors(id, editorsIds);
 
 			return res.status(200).json(okResponse(result));
+		} catch (e) {
+			next(e);
+		}
+	};
+
+	private deleteFolder: RequestHandler<{ id: string }, BaseResponse<boolean>> = async (req, res, next) => {
+		try {
+			const validatedBody = deleteFolderSchema.safeParse(req.params.id);
+
+			if (!validatedBody.success) {
+				throw new InvalidParameterError("Bad request");
+			}
+
+			//  @ts-ignore
+			const user = req.user as IUser;
+
+			const isDelete = await this.foldersService.deleteFolder(user.id, validatedBody.data);
+
+			return res.status(200).json(okResponse(isDelete));
 		} catch (e) {
 			next(e);
 		}
