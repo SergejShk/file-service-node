@@ -6,7 +6,13 @@ import { Controller } from "./Controller";
 
 import { FilesService } from "../services/filesService";
 
-import { getByFolderIdSchema, newFileSchema, presignedPostSchema, updateFileSchema } from "../dto/files";
+import {
+	getByFolderIdSchema,
+	newFileSchema,
+	presignedPostSchema,
+	updateFileEditorsSchema,
+	updateFileSchema,
+} from "../dto/files";
 
 import { AuthMiddlewares } from "../middlewares/authMiddlewares";
 
@@ -43,6 +49,11 @@ export class FilesController extends Controller {
 		);
 		this.router.get("/:key", this.authMiddlewares.isAuthorized, this.link({ route: this.getObject }));
 		this.router.put("/update/:id", this.authMiddlewares.isAuthorized, this.link({ route: this.updateFile }));
+		this.router.put(
+			"/update-editors/:id",
+			this.authMiddlewares.isAuthorized,
+			this.link({ route: this.updateEditors })
+		);
 	}
 
 	private createPresignedPost: RequestHandler<{}, BaseResponse<IS3PresignedPostResponse>> = async (
@@ -131,6 +142,25 @@ export class FilesController extends Controller {
 			}
 
 			const result = await this.filesService.update(validatedBody.data);
+
+			return res.status(200).json(okResponse(result));
+		} catch (e) {
+			next(e);
+		}
+	};
+
+	private updateEditors: RequestHandler<{ id: number }, BaseResponse<File>> = async (req, res, next) => {
+		try {
+			const body = { ...req.body, id: req.params.id };
+			const validatedBody = updateFileEditorsSchema.safeParse(body);
+
+			if (!validatedBody.success) {
+				throw new InvalidParameterError("Bad request");
+			}
+
+			const { id, editorsIds } = validatedBody.data;
+
+			const result = await this.filesService.updateEditors(id, editorsIds);
 
 			return res.status(200).json(okResponse(result));
 		} catch (e) {

@@ -50,4 +50,14 @@ export class FilesDb {
 			.where(eq(files.id, file.id))
 			.returning()
 			.then((res) => res[0]);
+
+	public updateEditors = async (id: number, editorsIds: number[]) =>
+		this.db
+			.update(files)
+			.set({
+				editorsIds,
+			})
+			.where(eq(files.id, id))
+			.returning()
+			.then((res) => res[0]);
 }

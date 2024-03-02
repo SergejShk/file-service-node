@@ -56,4 +56,8 @@ export class FilesService {
 	update = (file: IUpdateFile) => {
 		return this.filesDb.updateFile(file);
 	};
+
+	updateEditors = (id: number, editorsIds: number[]) => {
+		return this.filesDb.updateEditors(id, editorsIds);
+	};
 }

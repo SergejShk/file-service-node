@@ -31,3 +31,10 @@ export const updateFileSchema = z
 		isPublick: z.boolean(),
 	})
 	.strict();
+
+export const updateFileEditorsSchema = z
+	.object({
+		id: z.coerce.number(),
+		editorsIds: z.number().array(),
+	})
+	.strict();
