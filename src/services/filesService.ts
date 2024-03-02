@@ -1,4 +1,4 @@
-import { Endpoint, S3 } from "aws-sdk";
+import { AWSError, Endpoint, S3 } from "aws-sdk";
 
 import { FilesDb } from "../database/filesDb";
 
@@ -59,5 +59,29 @@ export class FilesService {
 
 	updateEditors = (id: number, editorsIds: number[]) => {
 		return this.filesDb.updateEditors(id, editorsIds);
+	};
+
+	private deleteObject = async (key: string): Promise<boolean> =>
+		new Promise((resolve: (val: boolean) => void, reject: (val: AWSError) => void) => {
+			this.S3.deleteObject(
+				{
+					Bucket: this.bucketName,
+					Key: key,
+				},
+				(err: AWSError) => {
+					if (err) {
+						reject(err);
+					} else {
+						resolve(true);
+					}
+				}
+			);
+		});
+
+	deleteFile = async (id: number, key: string) => {
+		await this.filesDb.deleteFile(id);
+		await this.deleteObject(key);
+
+		return true;
 	};
 }

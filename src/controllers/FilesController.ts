@@ -7,6 +7,7 @@ import { Controller } from "./Controller";
 import { FilesService } from "../services/filesService";
 
 import {
+	deleteFileSchema,
 	getByFolderIdSchema,
 	newFileSchema,
 	presignedPostSchema,
@@ -54,6 +55,7 @@ export class FilesController extends Controller {
 			this.authMiddlewares.isAuthorized,
 			this.link({ route: this.updateEditors })
 		);
+		this.router.put("/delete", this.authMiddlewares.isAuthorized, this.link({ route: this.deleteFile }));
 	}
 
 	private createPresignedPost: RequestHandler<{}, BaseResponse<IS3PresignedPostResponse>> = async (
@@ -163,6 +165,22 @@ export class FilesController extends Controller {
 			const result = await this.filesService.updateEditors(id, editorsIds);
 
 			return res.status(200).json(okResponse(result));
+		} catch (e) {
+			next(e);
+		}
+	};
+
+	private deleteFile: RequestHandler<{ key: string }, BaseResponse<boolean>> = async (req, res, next) => {
+		try {
+			const validatedBody = deleteFileSchema.safeParse(req.body);
+
+			if (!validatedBody.success) {
+				throw new InvalidParameterError("Bad request");
+			}
+
+			const isDelete = await this.filesService.deleteFile(validatedBody.data.id, validatedBody.data.key);
+
+			return res.status(200).json(okResponse(isDelete));
 		} catch (e) {
 			next(e);
 		}

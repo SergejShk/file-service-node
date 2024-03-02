@@ -38,3 +38,10 @@ export const updateFileEditorsSchema = z
 		editorsIds: z.number().array(),
 	})
 	.strict();
+
+export const deleteFileSchema = z
+	.object({
+		id: z.coerce.number(),
+		key: z.string(),
+	})
+	.strict();
