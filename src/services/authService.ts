@@ -26,17 +26,63 @@ export class AuthService {
 		});
 	};
 
-	signUp = async (body: ISignUpBody) => {
-		const { email } = body;
-
+	googleLogIn = async (email: string) => {
 		const user = await this.usersDb.getUserByEmail(email);
 
 		if (user.length) {
+			const payloadToken = {
+				id: user[0].id,
+				email: user[0].email,
+			};
+
+			const accessToken = this.getToken(payloadToken, Token.Access);
+			const refreshToken = this.getToken(payloadToken, Token.Refresh);
+
+			return { ...payloadToken, accessToken, refreshToken };
+		}
+
+		const [response] = await this.usersDb.createUser({
+			email,
+		});
+
+		const payloadToken = {
+			id: response.id,
+			email: response.email,
+		};
+
+		const accessToken = this.getToken(payloadToken, Token.Access);
+		const refreshToken = this.getToken(payloadToken, Token.Refresh);
+
+		return { ...payloadToken, accessToken, refreshToken };
+	};
+
+	signUp = async (body: ISignUpBody) => {
+		const { email } = body;
+		const user = await this.usersDb.getUserByEmail(email);
+
+		if (user[0].password) {
 			throw new DuplicateUserError("User already exists");
 		}
 
-		const hashedPassword = await bcrypt.hash(body.password, 10);
+		if (user.length) {
+			const hashedPassword = await bcrypt.hash(body.password, 10);
+			const response = await this.usersDb.updateUserPassword({
+				...user[0],
+				password: hashedPassword,
+			});
 
+			const payloadToken = {
+				id: response.id,
+				email: response.email,
+			};
+
+			const accessToken = this.getToken(payloadToken, Token.Access);
+			const refreshToken = this.getToken(payloadToken, Token.Refresh);
+
+			return { ...payloadToken, accessToken, refreshToken };
+		}
+
+		const hashedPassword = await bcrypt.hash(body.password, 10);
 		const [response] = await this.usersDb.createUser({
 			...body,
 			password: hashedPassword,
@@ -47,20 +93,20 @@ export class AuthService {
 			email: response.email,
 		};
 
-		const newUser = {
-			...payloadToken,
-		};
-
 		const accessToken = this.getToken(payloadToken, Token.Access);
 		const refreshToken = this.getToken(payloadToken, Token.Refresh);
 
-		return { ...newUser, accessToken, refreshToken };
+		return { ...payloadToken, accessToken, refreshToken };
 	};
 
 	logIn = async (body: ISignUpBody) => {
 		const { email, password: reqPassword } = body;
 
 		const [user] = await this.usersDb.getUserByEmail(email);
+
+		if (!user.password) {
+			throw new InvalidParameterError("Email or password is wrong");
+		}
 
 		if (!user || !(await bcrypt.compare(reqPassword, user.password))) {
 			throw new InvalidParameterError("Email or password is wrong");
